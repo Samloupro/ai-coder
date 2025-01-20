@@ -87,3 +87,4 @@ def scrape():
 if __name__ == '__main__':
     print(f"Starting script version: {SCRIPT_VERSION}")
     app.run(host='0.0.0.0', port=5000)
+    print("Application is running at http://<your-domain-or-ip>:5000")
