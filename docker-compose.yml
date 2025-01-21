@@ -1,0 +1,29 @@
+version: '3.8'
+services:
+  scraper:
+    build: .
+    container_name: ${SERVICE_NAME:-contact-scraper}
+    environment:
+      - PORT=${PORT:-5000}
+      - WORKERS=${WORKERS:-4}
+      - TIMEOUT=${TIMEOUT:-300}
+      - REQUEST_TIMEOUT=${REQUEST_TIMEOUT:-60}
+      - MAX_LINKS_DEFAULT=${MAX_LINKS_DEFAULT:-100}
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+      - PYTHONUNBUFFERED=1
+    ports:
+      - "${PORT:-5000}:${PORT:-5000}"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:${PORT:-5000}/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          memory: ${MEMORY_LIMIT:-512M}
+          cpus: ${CPU_LIMIT:-0.5}
+        reservations:
+          memory: ${MEMORY_RESERVE:-256M}
+          cpus: ${CPU_RESERVE:-0.25}
+    restart: unless-stopped
