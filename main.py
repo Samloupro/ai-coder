@@ -1,5 +1,6 @@
 import asyncio
 import os
+import time
 from concurrent.futures import ThreadPoolExecutor
 from flask import Flask, request, jsonify
 from bs4 import BeautifulSoup
@@ -60,6 +61,7 @@ def health_check():
 
 @app.route('/scrape', methods=['GET'])
 def scrape():
+    start_time = time.time()
     url = request.args.get('url')
     if not url:
         return jsonify({'error': 'URL parameter is required'}), 400
@@ -100,8 +102,19 @@ def scrape():
             if include_social_links:
                 social_links = extract_social_links(visited_links)
 
+        # Calculate execution time
+        execution_time = time.time() - start_time
+        minutes = int(execution_time // 60)
+        seconds = int(execution_time % 60)
+        execution_time_str = f"{minutes:02d} mn : {seconds:02d} s"
+
+        # Count analyzed links
+        links_analysed_count = f"{len(visited_links)} links"
+
         result = {
             "request_id": str(uuid.uuid4()),
+            "execution_time": execution_time_str,
+            "links_analysed_count": links_analysed_count,
             "domain": domain,
             "query": url,
             "status": "OK",
