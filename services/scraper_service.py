@@ -41,17 +41,24 @@ def analyze_links_parallel(links, headers, domain):
         finally:
             loop.close()
 
-def process_scraping_results(results, include_emails=True, include_phones=True, include_social_links=True):
+def process_scraping_results(results, domain_links, all_links, include_emails=True, include_phones=True, include_social_links=True):
     """
     Traite les résultats du scraping et combine les données.
+    Args:
+        results: Résultats de l'analyse des liens du domaine
+        domain_links: Liste des liens du même domaine
+        all_links: Liste de tous les liens trouvés (pour l'extraction des réseaux sociaux)
+        include_*: Flags pour inclure/exclure certains types de données
     """
     emails = {}
     phones = {}
-    visited_links = set()
+    visited_links = set(domain_links)  # Initialiser avec les liens du domaine
     social_links = {}
     
     # Log initial state
     logger.info(f"Processing {len(results)} scraping results")
+    logger.info(f"Total domain links: {len(domain_links)}")
+    logger.info(f"Total all links: {len(all_links)}")
     
     # Traiter chaque résultat
     for result in results:
@@ -75,15 +82,11 @@ def process_scraping_results(results, include_emails=True, include_phones=True, 
                     else:
                         phones[phone] = links
                 logger.info(f"Found {len(result_phones)} phones in current result")
-            
-            # Ajouter les liens visités
-            if result_visited:
-                visited_links.update(result_visited)
     
-    # Extraire les liens sociaux si demandé
-    if include_social_links and visited_links:
-        social_links = extract_social_links(visited_links)
-        logger.info(f"Extracted social links: {social_links}")
+    # Extraire les liens sociaux de tous les liens trouvés
+    if include_social_links and all_links:
+        social_links = extract_social_links(all_links)
+        logger.info(f"Extracted social links from {len(all_links)} total links")
     
     # Log final results
     logger.info(f"Total unique emails found: {len(emails)}")

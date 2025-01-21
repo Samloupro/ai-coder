@@ -35,22 +35,28 @@ def register_routes(app):
 
             logger.info(f"Starting scrape for URL: {url} with max_link: {max_link}")
             
-            links, error = link_scraper(url, headers, max_link)
+            # Récupérer les liens du domaine et tous les liens
+            domain_links, all_links, error = link_scraper(url, headers, max_link)
             if error:
                 logger.error(f"Error scraping links: {error}")
                 return jsonify(format_error_response(error)), 500
 
             root_domain = get_root_domain(url, headers)
-            emails, phones, visited_links = {}, {}, set()
+            emails, phones, social_links = {}, {}, {}
+            visited_links = set()
 
             if include_unique_links and not (include_emails or include_phones or include_social_links):
-                valid_links = [link for link in links if is_valid_url(link)]
+                # Si on veut uniquement les liens uniques, pas besoin d'analyse supplémentaire
+                valid_links = [link for link in domain_links if is_valid_url(link)]
                 visited_links.update(valid_links)
             else:
                 if include_emails or include_phones or include_unique_links:
-                    results = analyze_links_parallel(links, headers, root_domain)
+                    # Analyser seulement les liens du domaine pour les emails et téléphones
+                    results = analyze_links_parallel(domain_links, headers, root_domain)
                     emails, phones, social_links, visited_links = process_scraping_results(
                         results,
+                        domain_links,
+                        all_links,  # Passer tous les liens pour l'extraction des réseaux sociaux
                         include_emails,
                         include_phones,
                         include_social_links
