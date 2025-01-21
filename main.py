@@ -33,6 +33,15 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+def get_root_domain(url, headers):
+    try:
+        response = requests.get(url, headers=headers, allow_redirects=True, timeout=REQUEST_TIMEOUT)
+        final_url = response.url
+        return urlparse(final_url).netloc
+    except Exception as e:
+        logger.error(f"Error getting root domain for {url}: {str(e)}")
+        return urlparse(url).netloc
+
 def analyze_links_parallel(links, headers, domain):
     valid_links = [link for link in links if is_valid_url(link)]
     with ThreadPoolExecutor(max_workers=WORKERS) as executor:
@@ -83,7 +92,7 @@ def scrape():
             logger.error(f"Error scraping links: {error}")
             return jsonify({'error': error}), 500
 
-        domain = urlparse(url).netloc
+        root_domain = get_root_domain(url, headers)
         emails, phones, visited_links = {}, {}, set()
 
         if include_unique_links and not (include_emails or include_phones or include_social_links):
@@ -91,7 +100,7 @@ def scrape():
             visited_links.update(valid_links)
         else:
             if include_emails or include_phones or include_unique_links:
-                results = analyze_links_parallel(links, headers, domain)
+                results = analyze_links_parallel(links, headers, root_domain)
                 for result in results:
                     if result:  # Vérification que le résultat n'est pas None
                         emails.update(result[0])
@@ -115,7 +124,7 @@ def scrape():
             "request_id": str(uuid.uuid4()),
             "execution_time": execution_time_str,
             "links_analysed_count": links_analysed_count,
-            "domain": domain,
+            "root_domain": root_domain,
             "query": url,
             "status": "OK",
             "data": [
