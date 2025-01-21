@@ -27,12 +27,14 @@ def analyze_links(link, headers, domain):
         response.raise_for_status()
         soup = BeautifulSoup(response.text, 'html.parser')
 
-        emails_found = extract_emails_html(soup.text) + extract_emails_jsonld(soup)
-        for email in set(emails_found):
+        # Utiliser l'opération union (|) pour les sets au lieu de l'addition
+        emails_found = extract_emails_html(soup.text) | extract_emails_jsonld(soup)
+        for email in emails_found:
             emails.setdefault(email, []).append(link)
 
-        phones_found = extract_phones_html(soup.text) + extract_phones_jsonld(soup)
-        for phone in set(validate_phones(phones_found)):
+        # Pour les téléphones, vérifier le type de retour de ces fonctions
+        phones_found = set(extract_phones_html(soup.text)) | set(extract_phones_jsonld(soup))
+        for phone in validate_phones(phones_found):
             phones.setdefault(phone, []).append(link)
     except requests.exceptions.RequestException as e:
         logger.error(f"Failed to process link {link}: {e}")

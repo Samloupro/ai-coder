@@ -7,25 +7,34 @@ import logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(message)s')
 
 def validate_phones(phones):
-    valid_phones = []
+    """
+    Valide une liste de numéros de téléphone et retourne un set de numéros valides.
+    """
+    valid_phones = set()
     for phone in phones:
         try:
             parsed_phone = phonenumbers.parse(phone, "US")  # Use the appropriate country code
             if phonenumbers.is_valid_number(parsed_phone):
-                valid_phones.append(phone)
+                valid_phones.add(phone)
         except phonenumbers.NumberParseException:
             continue
     return valid_phones
 
 def extract_phones_html(text):
-    phones = []
+    """
+    Extrait les numéros de téléphone du texte HTML et retourne un set.
+    """
+    phones = set()
     for match in PhoneNumberMatcher(text, "US"):  # Use the appropriate country code
-        phones.append(phonenumbers.format_number(match.number, phonenumbers.PhoneNumberFormat.E164))
+        phones.add(phonenumbers.format_number(match.number, phonenumbers.PhoneNumberFormat.E164))
     if phones:
         logging.info(f"Extracted phones from HTML: {phones}")
     return phones
 
 def extract_phones_jsonld(soup):
+    """
+    Extrait les numéros de téléphone du JSON-LD et retourne un set.
+    """
     phones = set()
     scripts = soup.find_all("script", type="application/ld+json")
     for script in scripts:
@@ -41,7 +50,6 @@ def extract_phones_jsonld(soup):
                     continue
         except (json.JSONDecodeError, TypeError):
             continue
-    phones_list = list(phones)
-    if phones_list:
-        logging.info(f"Extracted phones from JSON-LD: {phones_list}")
-    return phones_list
+    if phones:
+        logging.info(f"Extracted phones from JSON-LD: {phones}")
+    return phones
