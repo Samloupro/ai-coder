@@ -13,11 +13,18 @@ services:
       - PYTHONUNBUFFERED=1
     ports:
       - "${PORT:-5000}:${PORT:-5000}"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.scraper.loadbalancer.healthcheck.path=/health"
+      - "traefik.http.services.scraper.loadbalancer.healthcheck.interval=5s"
+      - "traefik.http.services.scraper.loadbalancer.healthcheck.timeout=5s"
+      - "traefik.http.services.scraper.loadbalancer.healthcheck.retries=10"
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:${PORT:-5000}/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
+      test: ["CMD-SHELL", "curl -X GET -f 'http://localhost:${PORT:-5000}/health' || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 5s
     deploy:
       resources:
         limits:

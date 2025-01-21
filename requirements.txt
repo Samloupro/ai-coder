@@ -6,3 +6,4 @@ html5lib==1.1
 email_validator>=1.3.0
 phonenumbers>=8.13.0
 gunicorn>=20.1.0
+psutil==5.9.5

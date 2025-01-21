@@ -10,11 +10,20 @@ import time
 def register_routes(app):
     @app.route('/health')
     def health_check():
-        """Endpoint pour le healthcheck de Docker"""
-        return jsonify({
-            "status": "healthy",
-            "version": SCRIPT_VERSION
-        })
+        """Endpoint pour le healthcheck Coolify"""
+        from utils.health_checker import get_system_health
+        
+        health_status = get_system_health()
+        
+        # Vérifie si le système est en bonne santé
+        components = health_status["components"]
+        if (components["scraper_service"]["status"] == "unhealthy" or
+            components["system"]["memory"]["percent"] > 90 or
+            components["system"]["cpu"]["percent"] > 90):
+            return "Service Unavailable", 503
+            
+        # Retourne exactement ce que Coolify attend
+        return "OK", 200
 
     @app.route('/scrape', methods=['GET'])
     def scrape():
