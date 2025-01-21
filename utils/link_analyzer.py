@@ -27,13 +27,16 @@ def analyze_links(link, headers, domain):
         response.raise_for_status()
         soup = BeautifulSoup(response.text, 'html.parser')
 
+        # Utiliser get_text avec separator pour éviter les collages de texte
+        html_text = soup.get_text(separator=' ')
+        
         # Utiliser l'opération union (|) pour les sets au lieu de l'addition
-        emails_found = extract_emails_html(soup.text) | extract_emails_jsonld(soup)
+        emails_found = extract_emails_html(html_text) | extract_emails_jsonld(soup)
         for email in emails_found:
             emails.setdefault(email, []).append(link)
 
         # Pour les téléphones, vérifier le type de retour de ces fonctions
-        phones_found = set(extract_phones_html(soup.text)) | set(extract_phones_jsonld(soup))
+        phones_found = set(extract_phones_html(html_text)) | set(extract_phones_jsonld(soup))
         for phone in validate_phones(phones_found):
             phones.setdefault(phone, []).append(link)
     except requests.exceptions.RequestException as e:
