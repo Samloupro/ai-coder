@@ -24,6 +24,17 @@ def validate_phone(phone, country_code="US"):
     parsed = parse_phone(phone, country_code)
     return parsed and phonenumbers.is_valid_number(parsed)
 
+def validate_phones(phones, country_code="US"):
+    """
+    Fonction de compatibilité pour l'ancienne API.
+    Valide une liste de numéros de téléphone et retourne un set de numéros valides.
+    """
+    valid_phones = set()
+    for phone in phones:
+        if validate_phone(phone, country_code):
+            valid_phones.add(phone)
+    return valid_phones
+
 def format_phone(parsed_number):
     """
     Formate un numéro parsé en format E164.
