@@ -1,5 +1,6 @@
 import uuid
 import time
+from utils.link_classifier import classify_links
 
 def format_execution_time(start_time):
     execution_time = time.time() - start_time
@@ -35,7 +36,15 @@ def format_scraping_response(
                 "emails": [{"value": email, "sources": sources} for email, sources in emails.items()] if include_emails else [],
                 "phone_numbers": [{"value": phone, "sources": sources} for phone, sources in phones.items()] if include_phones else [],
                 "social_links": social_links if include_social_links else {},
-                "unique_links": sorted(list(visited_links)) if include_unique_links else []
+                "unique_links": classify_links(sorted(list(visited_links)), root_domain) if include_unique_links else {
+                    "Home": [],
+                    "Pages": [],
+                    "Policies": [],
+                    "Blogs": [],
+                    "Collections": [],
+                    "Products": [],
+                    "Others": []
+                }
             }
         ]
     }
