@@ -74,9 +74,12 @@ def link_scraper(url, headers, max_link=None):
         # Filtrer les liens par domaine pour l'exploration
         domain_links = {link for link in all_links if is_same_domain(link, domain)}
         
-        # Limiter le nombre de liens du domaine si nécessaire
+        # Convertir en liste et positionner l'URL racine en premier
+        domain_links = [url] + [link for link in domain_links if link != url]
+        
+        # Limiter le nombre de liens si nécessaire
         if max_link and max_link > 0:
-            domain_links = list(domain_links)[:max_link]
+            domain_links = domain_links[:max_link]
         
         # Log des résultats
         logger.info(f"Found {len(domain_links)} domain links and {len(all_links)} total links")
