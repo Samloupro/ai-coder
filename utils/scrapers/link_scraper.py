@@ -3,7 +3,7 @@ import requests
 from urllib.parse import urlparse
 import logging
 import json
-from utils.link_explorer import extract_links, is_same_domain, normalize_url
+from utils.extractors.link_explorer import extract_links, is_same_domain, normalize_url
 
 logger = logging.getLogger(__name__)
 

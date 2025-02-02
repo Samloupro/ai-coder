@@ -18,7 +18,7 @@ def get_cpu_usage() -> Dict[str, Any]:
     """Récupère les informations d'utilisation du CPU"""
     return {
         "percent": psutil.cpu_percent(interval=1),
-        "load": os.getloadavg()[0]
+    # Removed load as it's not available on Windows
     }
 
 def check_scraper_service() -> Dict[str, Any]:

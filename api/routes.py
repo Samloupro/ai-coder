@@ -3,15 +3,15 @@ from config.settings import MAX_LINKS_DEFAULT, SCRIPT_VERSION, logger
 from services.domain_service import get_root_domain
 from services.scraper_service import analyze_links_parallel, process_scraping_results
 from formatters.response_formatter import format_scraping_response, format_error_response
-from utils.link_scraper import link_scraper, is_valid_url
-from utils.user_agent import get_user_agent_headers
+from utils.scrapers.link_scraper import link_scraper, is_valid_url
+from utils.scrapers.user_agent import get_user_agent_headers
 import time
 
 def register_routes(app):
     @app.route('/health')
     def health_check():
         """Endpoint pour le healthcheck Coolify"""
-        from utils.health_checker import get_system_health
+        from utils.scrapers.health_checker import get_system_health
         
         health_status = get_system_health()
         

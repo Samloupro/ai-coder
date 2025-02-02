@@ -1,6 +1,6 @@
 import uuid
 import time
-from utils.link_classifier import classify_links
+from utils.analyzers.link_classifier import classify_links
 
 def format_execution_time(start_time):
     execution_time = time.time() - start_time

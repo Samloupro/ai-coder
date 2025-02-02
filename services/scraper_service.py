@@ -1,9 +1,9 @@
 import asyncio
 from concurrent.futures import ThreadPoolExecutor
 from config.settings import WORKERS, logger
-from utils.link_analyzer import analyze_links
-from utils.link_scraper import is_valid_url
-from utils.social_links import extract_social_links
+from utils.analyzers.link_analyzer import analyze_links
+from utils.scrapers.link_scraper import is_valid_url
+from utils.extractors.social_links import extract_social_links
 
 def analyze_links_parallel(links, headers, domain):
     """
