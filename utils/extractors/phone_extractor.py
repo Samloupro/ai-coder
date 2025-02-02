@@ -48,13 +48,38 @@ def format_phone(parsed_number):
     # Remove leading zeros and non-numeric characters
     formatted_number = ''.join(filter(str.isdigit, formatted_number))
     
-    # Unified formatting style: Country Code - Operator Prefix - Local Number
+    # Dictionary to map country codes to formatting rules
+    formatting_rules = {
+        '1': lambda num: f"+{num[:1]} {num[1:4]} {num[4:]}",
+        '212': lambda num: f"+{num[:3]} {num[3:6]} {num[6:]}",
+        '33': lambda num: f"+{num[:2]} {num[2:4]} {num[4:]}",
+        '49': lambda num: f"+{num[:2]} {num[2:5]} {num[5:]}",
+    }
+    
+    # Get the country code
     country_code = formatted_number[:2]  # Get the country code
-    operator_prefix = formatted_number[1:4]  # Default operator prefix
     local_number = formatted_number[4:]  # Remaining local number
 
-    # Format the output
-    return f"+{country_code} {operator_prefix} {local_number[:2]} {local_number[2:4]} {local_number[4:]}"
+    # Use the formatting rule if it exists
+    if country_code in formatting_rules:
+        return formatting_rules[country_code](local_number)
+
+    # Use the formatting rule if it exists
+    if country_code in formatting_rules:
+        return formatting_rules[country_code](local_number)
+    else:
+        return None  # Return None if no formatting rule is found
+
+    # Use the formatting rule if it exists
+    if country_code in formatting_rules:
+        return formatting_rules[country_code](local_number)
+    local_number = formatted_number[4:]  # Remaining local number
+
+    # Format the output with segmentation into groups of two
+    local_number_segments = [local_number[i:i+2] for i in range(0, len(local_number), 2)]
+    formatted_local_number = ' '.join(local_number_segments)
+    
+    return f"+{country_code} {operator_prefix} {formatted_local_number}"
 
 def extract_phones_html(text, country_code="US"):
     """
