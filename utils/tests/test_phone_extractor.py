@@ -1,5 +1,5 @@
 import unittest
-from .phone_extractor import (
+from utils.extractors.phone_extractor import (
     parse_phone,
     validate_phone,
     extract_phones_html,

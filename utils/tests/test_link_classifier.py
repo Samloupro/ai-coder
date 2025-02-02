@@ -1,5 +1,5 @@
 import unittest
-from utils.link_classifier import classify_links
+from utils.analyzers.link_classifier import classify_links
 
 class TestLinkClassifier(unittest.TestCase):
     def test_classify_links(self):
@@ -57,7 +57,7 @@ class TestLinkClassifier(unittest.TestCase):
             ]
         }
         
-        result = classify_links(urls, "example.com")
+        result = classify_links(urls)
         self.assertEqual(result, expected)
 
     def test_root_domain_validation(self):
