@@ -37,9 +37,30 @@ def validate_phones(phones, country_code="US"):
 
 def format_phone(parsed_number):
     """
-    Formate un numéro parsé en format E164.
+    Formate un numéro parsé en format international E.164 et le rend plus lisible.
     """
-    return phonenumbers.format_number(parsed_number, phonenumbers.PhoneNumberFormat.E164)
+    if not parsed_number or not phonenumbers.is_valid_number(parsed_number):
+        return None  # Return None for invalid numbers
+
+    # Format the number in E.164
+    formatted_number = phonenumbers.format_number(parsed_number, phonenumbers.PhoneNumberFormat.E164)
+    
+    # Remove leading zeros and non-numeric characters
+    formatted_number = ''.join(filter(str.isdigit, formatted_number))
+    
+    # Add spaces for better readability
+    country_code = formatted_number[:2]  # Get the country code
+    if country_code == '1':  # USA
+        return f"+{formatted_number[:1]} {formatted_number[1:4]} {formatted_number[4:7]} {formatted_number[7:]}"
+    elif country_code == '212':  # Morocco
+        return f"+{formatted_number[:3]} {formatted_number[3:6]} {formatted_number[6:8]} {formatted_number[8:]}"
+    elif country_code == '33':  # France
+        return f"+{formatted_number[:2]} {formatted_number[2:3]} {formatted_number[3:5]} {formatted_number[5:7]} {formatted_number[7:]}"
+    elif country_code == '49':  # Germany
+        return f"+{formatted_number[:2]} {formatted_number[2:5]} {formatted_number[5:8]} {formatted_number[8:]}"
+    # Add more country codes as needed
+    else:
+        return f"+{formatted_number[:2]} {formatted_number[2:]}"  # Default formatting
 
 def extract_phones_html(text, country_code="US"):
     """
