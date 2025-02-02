@@ -9,13 +9,18 @@ def test_format_phone():
         "+33 612345678": "+33612345678",  # France
         "+4915234567890": "+4915234567890",  # Germany
         "invalid_number": None,
-        "+1 415 555 2671": "+1415552671",  # USA
+        "+1 415 555 2671": "+14155552671",  # Updated expected output
     }
 
     for input_number, expected_output in test_cases.items():
-        parsed_number = phonenumbers.parse(input_number, None)  # Ensure correct parsing
-        result = format_phone(parsed_number)
-        assert result == expected_output, f"Expected {expected_output}, but got {result} for input {input_number}"
+        try:
+            parsed_number = phonenumbers.parse(input_number, None)  # Ensure correct parsing
+            print(f"Parsed number for {input_number}: {parsed_number}")  # Debug log
+            result = format_phone(parsed_number)
+            print(f"Formatted result for {input_number}: {result}")  # Debug log
+            assert result == expected_output, f"Expected {expected_output}, but got {result} for input {input_number}"
+        except phonenumbers.NumberParseException:
+            assert expected_output is None, f"Expected None for input {input_number}, but an exception was raised."
 
 def test_validate_phones():
     # Test cases
